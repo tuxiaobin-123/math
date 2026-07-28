@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cumcm-lens"
+version = "0.1.0"
+description = "Auditable CUMCM knowledge graph, benchmark laboratory and case reproductions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "tuxiaobin-123" }]
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+  "scikit-learn>=1.4",
+  "matplotlib>=3.8",
+  "openpyxl>=3.1",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+notebook = ["jupyter>=1.0", "nbformat>=5.10", "nbconvert>=7.16"]
+report = ["reportlab>=4.2", "fonttools>=4.50"]
+
+[project.scripts]
+cumcm-lens = "cumcm_lens.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cumcm_lens"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]

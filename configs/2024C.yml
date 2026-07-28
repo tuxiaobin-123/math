@@ -1,0 +1,17 @@
+case: 2024C
+years: [2024, 2025, 2026, 2027, 2028, 2029, 2030]
+decision_granularity: whole_plot_single_crop
+candidate_limit_per_land_season: 6
+solver:
+  name: scipy_highs_milp
+  time_limit_seconds: 10
+  mip_relative_gap_target: 0.015
+scenarios:
+  - waste
+  - half_price
+  - robust_worst_case
+audits:
+  - plot_capacity
+  - consecutive_crop
+  - legume_in_every_three_year_window
+  - land_crop_eligibility

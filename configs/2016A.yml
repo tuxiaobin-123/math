@@ -1,0 +1,14 @@
+case: 2016A
+official_case:
+  chain_type: II
+  chain_length_m: 22.05
+  ballast_mass_kg: 1200
+  depth_m: 18
+constraints:
+  barrel_angle_deg_max: 5
+  anchor_angle_deg_max: 16
+  draft_m_max: 2
+robust_scenarios:
+  depth_m: [16, 18, 20]
+  wind_ms: 36
+  current_ms: 1.5

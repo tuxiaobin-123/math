@@ -1,0 +1,4 @@
+year,problem,title,domain,primary_tasks,data_form,core_models,status,official_url
+2023,E,黄河水沙监测数据分析,水利,缺失数据建模|通量估算|突变周期|时序预测|采样优化,3个Excel附件,回归|时间序列|数值积分|启发式设计,reproduced,https://www.mcm.edu.cn/html_cn/node/c74d72127066f510a5723a94b5323a26.html
+2016,A,系泊系统的设计,海洋工程,静力平衡|悬链线|参数设计|鲁棒场景,题面参数,非线性方程|悬链线|数值积分|离散搜索,reproduced,https://www.mcm.edu.cn/html_cn/node/6d026d84bd785435f92e3079b4a87a2b.html
+2024,C,农作物的种植策略,农业,多期排产|整数规划|情景分析|不确定性,2个Excel附件和结果模板,MILP|情景规划|保守鲁棒优化,reproduced,https://www.mcm.edu.cn/html_cn/node/a0c1fb5c31d43551f08cd8ad16870444.html

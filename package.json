@@ -6,5 +6,11 @@
   "license": "MIT",
   "dependencies": {
     "node-unrar-js": "2.0.2"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  },
+  "scripts": {
+    "test:site": "node scripts/verify_site.mjs"
   }
 }

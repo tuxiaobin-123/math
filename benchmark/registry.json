@@ -1,0 +1,31 @@
+{
+  "schema": "cumcm-lens-benchmark/v1",
+  "version": "5.0.0",
+  "boundary": "Community training benchmark; not an official CUMCM ranking.",
+  "cases": [
+    {
+      "id": "2023E-sediment-forecast",
+      "source": "CUMCM 2023 E official attachments",
+      "task": "time_series",
+      "split": "chronological 80/20 for observed sediment; monthly last-12 backtest",
+      "metrics": ["MAE", "RMSE", "R2", "runtime_seconds"],
+      "guardrails": ["no random time split", "no target leakage", "report missingness"]
+    },
+    {
+      "id": "2016A-mooring-design",
+      "source": "CUMCM 2016 A official statement",
+      "task": "mechanism_optimization",
+      "split": "fixed official states plus 16/18/20 m robust scenarios",
+      "metrics": ["equation_residual", "constraint_violations", "excursion_radius", "runtime_seconds"],
+      "guardrails": ["state model assumptions", "verify catenary by numerical integration", "do not claim engineering certification"]
+    },
+    {
+      "id": "2024C-crop-plan",
+      "source": "CUMCM 2024 C official attachments",
+      "task": "mixed_integer_optimization",
+      "split": "2024-2030 waste, half-price and robust scenarios",
+      "metrics": ["objective", "MIP_gap", "constraint_violations", "runtime_seconds"],
+      "guardrails": ["report solver status", "audit every hard constraint", "do not rename a feasible solution global optimum"]
+    }
+  ]
+}

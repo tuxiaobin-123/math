@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import hashlib
+import io
+import tarfile
 import urllib.request
 from pathlib import Path
 
@@ -13,10 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 FONT_DIR = ROOT / "assets" / "fonts"
 WOFF = FONT_DIR / "NotoSansSC-Regular.woff"
 TTF = FONT_DIR / "NotoSansSC-Regular.ttf"
-URL = (
-    "https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.8/files/"
-    "noto-sans-sc-chinese-simplified-400-normal.woff"
-)
+URL = "https://registry.npmjs.org/@fontsource/noto-sans-sc/-/noto-sans-sc-5.2.8.tgz"
+MEMBER = "package/files/noto-sans-sc-chinese-simplified-400-normal.woff"
 EXPECTED_SHA256 = "1aac13a9ba6d1fd92f8a7294c3119dc4fed54c517bb6bbf021a75850b568d3ea"
 
 
@@ -31,7 +31,12 @@ def main() -> None:
         return
     request = urllib.request.Request(URL, headers={"User-Agent": "CUMCM-Lens/0.1"})
     with urllib.request.urlopen(request, timeout=120) as response:
-        WOFF.write_bytes(response.read())
+        archive = response.read()
+    with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as bundle:
+        extracted = bundle.extractfile(MEMBER)
+        if extracted is None:
+            raise RuntimeError(f"font member missing from package: {MEMBER}")
+        WOFF.write_bytes(extracted.read())
     actual = digest(WOFF)
     if actual != EXPECTED_SHA256:
         WOFF.unlink(missing_ok=True)

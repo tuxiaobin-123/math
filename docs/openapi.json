@@ -1,0 +1,12 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "CUMCM Lens local API", "version": "5.0.0"},
+  "servers": [{"url": "http://127.0.0.1:8765"}],
+  "paths": {
+    "/api/v1/health": {"get": {"summary": "Health check", "responses": {"200": {"description": "OK"}}}},
+    "/api/v1/problems": {"get": {"summary": "Problem catalog availability", "responses": {"200": {"description": "OK"}}}},
+    "/api/v1/diagnose": {"post": {"summary": "Diagnose a five-dimensional learner profile", "responses": {"200": {"description": "Diagnosis"}}}},
+    "/api/v1/recommend-models": {"post": {"summary": "Return a baseline-first model sequence", "responses": {"200": {"description": "Recommendation"}}}},
+    "/api/v1/coach": {"post": {"summary": "Audit a modeling draft with deterministic rules", "responses": {"200": {"description": "Review"}}}}
+  }
+}

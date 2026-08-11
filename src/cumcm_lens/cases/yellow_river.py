@@ -266,7 +266,9 @@ def damped_trend_seasonal_backtest(
 
 
 def forecast_24_months(monthly: pd.DataFrame) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
-    future_dates = pd.date_range(monthly["timestamp"].max() + pd.offsets.MonthBegin(), periods=24)
+    future_dates = pd.date_range(
+        monthly["timestamp"].max() + pd.offsets.MonthBegin(), periods=24, freq="MS"
+    )
     output = pd.DataFrame({"timestamp": future_dates})
     comparisons: list[dict[str, Any]] = []
     for column in ("discharge_m3s", "sediment_kgm3"):
@@ -294,7 +296,8 @@ def forecast_24_months(monthly: pd.DataFrame) -> tuple[pd.DataFrame, list[dict[s
                 month: float(np.mean(residual[month_values == month])) for month in range(1, 13)
             }
             horizon = np.arange(1, 25)
-            trend = y[-1] + slope * np.cumsum(0.9**horizon)
+            fitted_endpoint = intercept + slope * (len(y) - 1)
+            trend = fitted_endpoint + slope * np.cumsum(0.9**horizon)
             prediction = trend + np.array([seasonal[d.month] for d in future_dates])
         output[column] = np.maximum(prediction, 0)
         output[f"{column}_model"] = best
@@ -372,13 +375,13 @@ def cross_section_summary(path: Path) -> pd.DataFrame:
         x, z = x[order], z[order]
         width = float(x.max() - x.min())
         reference = float(z.max())
-        area = float(np.trapezoid(reference - z, x))
+        area = float(np.trapz(reference - z, x))
         records.append(
             {
                 "date": date,
                 "points": len(x),
                 "width_m": width,
-                "mean_bed_elevation_m": float(np.trapezoid(z, x) / width),
+                "mean_bed_elevation_m": float(np.trapz(z, x) / width),
                 "section_area_below_local_max_m2": area,
             }
         )

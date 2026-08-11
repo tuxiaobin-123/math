@@ -12,15 +12,18 @@ run:
 	cumcm-lens run-all
 
 test:
-	pytest
+	PYTHONPATH=src python scripts/run_tests.py
 
 notebooks:
 	python scripts/build_notebooks.py
 
 reports:
+	PYTHONPATH=src python scripts/refresh_2023e_forecast_from_processed.py
 	cumcm-lens paper-figures
 	python scripts/prepare_report_font.py
 	python scripts/build_reports.py
+	python scripts/build_v5_handbooks.py
+	python scripts/sync_docs_downloads.py
 
 site:
 	python -m http.server 8000 -d docs

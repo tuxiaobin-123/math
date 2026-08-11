@@ -1,1320 +1,148 @@
 <!doctype html>
-<html lang="zh-CN" data-visualize-standalone>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="referrer" content="no-referrer">
-<title>CUMCM Lens · 真题实验仪表板</title>
-<style>:root {
-  color-scheme: light dark;
-  background-color: transparent !important;
-
-  /* Agent-facing contract; keep in sync with SKILL.md. */
-  --background: var(
-    --main-surface-primary,
-    light-dark(rgb(255 255 255), rgb(24 24 24))
-  );
-  --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
-  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
-  --card-foreground: var(--foreground);
-  --popover: light-dark(rgb(255 255 255), rgb(45 45 45));
-  --popover-foreground: var(--foreground);
-  --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
-  --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
-  --secondary: light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%));
-  --secondary-foreground: var(--foreground);
-  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
-  --muted-foreground: light-dark(
-    rgb(26 28 31 / 49.4%),
-    rgb(255 255 255 / 49.8%)
-  );
-  --accent: light-dark(rgb(229 242 255), rgb(13 39 63));
-  --accent-foreground: var(--primary);
-  --destructive: light-dark(rgb(226 85 7), rgb(255 133 73));
-  --border: light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%));
-  --input: light-dark(
-    rgb(26 28 31 / 11.8%),
-    color-mix(in oklab, rgb(0 0 0) 10%, transparent)
-  );
-  --ring: light-dark(rgb(51 156 255), rgb(131 195 255 / 76%));
-  --font-size-base: 14px;
-  --red: light-dark(rgb(186 38 35), rgb(250 66 62));
-  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
-
-  /* Internal implementation variables; not part of the agent contract. */
-  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
-  --font-size-normal: max(11px, var(--font-size-base));
-  --font-size-tooltip: calc(var(--font-size-base) - 1px);
-  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
-  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
-  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
-  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
-  --font-weight-normal: 430;
-  --font-weight-medium: 500;
-  --line-height-normal: calc(var(--font-size-normal) * 1.5);
-  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
-  --line-height-small: calc(var(--font-size-small) + 4px);
-  --radius: 10px;
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-2xl: calc(var(--radius) * 1.6);
-  --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
-  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
-
-  /* Legacy aliases; not part of the current agent contract. */
-  --viz-bg: transparent;
-  --viz-panel: var(--card);
-  --viz-border: var(--border);
-  --viz-text: var(--foreground);
-  --viz-muted: var(--muted-foreground);
-  --viz-accent: var(--primary);
-  --viz-accent-text: var(--primary-foreground);
-  --viz-accent-bg: var(--accent);
-  --viz-font-size: var(--font-size-base);
-  --viz-warning: var(--destructive);
-  --color-background-primary: var(--background);
-  --color-text-primary: var(--foreground);
-  --color-border-secondary: var(--border);
-}
-
-:root[data-visualize-standalone] {
-  background-color: var(--background) !important;
-}
-
-/* Generic mobile code-block hosts provide light/dark mode but no series palette.
-   AppBlock hosts set all six variables themselves. */
-:root:not([data-app-block-surface]) {
-  --viz-series-1: var(--primary);
-  --viz-series-2: light-dark(#f3883b, #f59a56);
-  --viz-series-3: light-dark(#5dc977, #74d58b);
-  --viz-series-4: light-dark(#eb77b1, #f08fc0);
-  --viz-series-5: light-dark(#9b79ec, #aa91ef);
-  --viz-series-6: light-dark(#3ab9b1, #5acbc2);
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html > body {
-  margin: 0;
-  padding: 5px;
-  color: var(--foreground);
-  background: transparent !important;
-  font-family: var(--font-sans);
-  font-size: var(--font-size-normal);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-
-:root:not([data-app-block-surface]) > body {
-  padding: 12px;
-}
-
-a {
-  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
-  cursor: pointer;
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-  text-underline-offset: 2px;
-}
-
-a:is(:hover, :focus-visible) {
-  text-decoration-line: underline;
-  text-decoration-style: dashed;
-  text-decoration-thickness: 0.5px;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-  margin-block: 0;
-}
-
-h1 {
-  font-size: var(--font-size-h1);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-}
-
-h2 {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-}
-
-h3,
-h4,
-h5,
-h6 {
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.3;
-}
-
-b,
-strong,
-th {
-  font-weight: var(--font-weight-medium);
-}
-
-code:not(pre code) {
-  display: inline;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 0.92em;
-  overflow-wrap: anywhere;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  word-break: break-word;
-}
-
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  color: var(--foreground);
-  font: inherit;
-  text-align: start;
-}
-
-.table :is(th, td) {
-  padding-block: 10px;
-  padding-inline: 0 24px;
-  overflow-wrap: anywhere;
-  border-bottom: 1px solid var(--border);
-  text-align: start;
-  vertical-align: top;
-}
-
-.table-responsive > .table :is(th, td) {
-  overflow-wrap: break-word;
-}
-
-.table :is(th, td):last-child {
-  padding-inline-end: 0;
-}
-
-.table :is(caption, thead th) {
-  font-weight: 600;
-}
-
-.table thead th {
-  padding-block: 8px;
-  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
-}
-
-.table tbody tr:last-child :is(th, td) {
-  border-bottom: 0;
-}
-
-.table.table-sm :is(th, td) {
-  padding-block: 6px;
-}
-
-.table.table-sm :is(th, td):not(:last-child) {
-  padding-inline-end: 16px;
-}
-
-.table :is(.text-end, [align="right"]) {
-  text-align: end;
-  font-variant-numeric: tabular-nums;
-}
-
-.table :is(.text-center, [align="center"]) {
-  text-align: center;
-}
-
-.table .text-nowrap {
-  white-space: nowrap;
-}
-
-#widget {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  padding: 0;
-  background: transparent !important;
-}
-
-.card {
-  min-width: 0;
-  padding: 12px;
-  overflow: hidden;
-  overflow-wrap: break-word;
-  border-radius: var(--radius-2xl);
-  color: var(--card-foreground);
-  background: var(--card);
-}
-
-#widget > :not(.card) {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.tooltip {
-  position: fixed;
-  z-index: 50;
-  top: 0;
-  left: 0;
-  width: max-content;
-  max-width: min(
-    20rem,
-    var(--tooltip-available-width, calc(100vw - 10px)),
-    calc(100vw - 10px)
-  );
-  max-height: min(
-    var(--tooltip-available-height, calc(100vh - 10px)),
-    calc(100vh - 10px)
-  );
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  color: var(--popover-foreground);
-  background: var(--popover);
-  box-shadow: none;
-  font-size: var(--font-size-tooltip);
-  line-height: var(--line-height-tooltip);
-  overflow-wrap: break-word;
-  white-space: normal;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* The bundled tooltip runtime owns [data-tooltip]. AppBlock's CSS-only
-   pseudo-tooltip can widen dense grids even while hidden. */
-main [data-tooltip]::after {
-  content: none;
-}
-
-.viz-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
-  gap: 10px;
-}
-
-.viz-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.viz-stat-value {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-}
-
-.viz-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-
-.viz-badge {
-  padding: 3px 8px;
-  border-radius: var(--radius-full);
-  color: var(--accent-foreground);
-  background: var(--accent);
-  font-weight: var(--font-weight-medium);
-}
-
-small,
-.text-small,
-.viz-badge {
-  font-size: var(--font-size-small);
-  line-height: var(--line-height-small);
-}
-
-.text-muted {
-  color: var(--muted-foreground);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.viz-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.viz-controls > .form-label {
-  display: grid;
-  min-width: min(100%, 260px);
-  flex: 1 1 280px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 2px 12px;
-  margin-bottom: 0;
-}
-
-.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
-  grid-column: 1 / -1;
-}
-
-.btn,
-.form-check-input,
-.form-control,
-.form-range,
-.form-select {
-  font: inherit;
-}
-
-.btn {
-  appearance: button;
-  display: inline-flex;
-  inline-size: fit-content;
-  max-inline-size: 100%;
-  min-height: 28px;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin: 0;
-  padding: 0 8px;
-  -webkit-app-region: no-drag;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-lg);
-  color: var(--secondary-foreground);
-  background: var(--secondary);
-  cursor: var(--cursor-interaction, pointer);
-  text-align: center;
-  text-decoration: none;
-  white-space: nowrap;
-  user-select: none;
-  -webkit-font-smoothing: antialiased;
-}
-
-.btn:is(.btn-block, .viz-tile) {
-  inline-size: 100%;
-}
-
-.btn.viz-tile {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-a.btn {
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.btn:not(:disabled):hover {
-  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.btn-primary {
-  border-color: transparent;
-  color: var(--interactive-label-primary-default, var(--primary-foreground));
-  background: var(--interactive-bg-primary-default, var(--foreground));
-  background-clip: padding-box;
-}
-
-.btn-primary .text-muted {
-  color: color-mix(
-    in srgb,
-    var(--interactive-label-primary-default, var(--primary-foreground)) 50%,
-    transparent
-  );
-}
-
-.btn-primary:not(:disabled):hover {
-  background: color-mix(in srgb, var(--foreground) 80%, transparent);
-  background-clip: padding-box;
-}
-
-.btn-ghost {
-  border-color: transparent;
-  color: var(--muted-foreground);
-  background: transparent;
-}
-
-.btn-ghost:not(:disabled):hover {
-  color: var(--foreground);
-  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-[data-lucide] {
-  stroke-width: 1.6;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--foreground);
-}
-
-.form-control {
-  display: block;
-  width: 100%;
-  min-height: 28px;
-  padding: 0 8px;
-  outline: none;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-lg);
-  color: var(--foreground);
-  background: var(--secondary);
-}
-
-.form-control::placeholder {
-  color: var(--muted-foreground);
-}
-
-.form-control[type="file"] {
-  padding: 0;
-  overflow: hidden;
-  cursor: var(--cursor-interaction, pointer);
-}
-
-.form-control[type="file"]::file-selector-button {
-  min-height: 26px;
-  margin-right: 8px;
-  padding: 0 8px;
-  border: 0;
-  border-right: 1px solid var(--input);
-  color: var(--secondary-foreground);
-  background: var(--secondary);
-  cursor: inherit;
-  font: inherit;
-}
-
-.form-control[type="file"]:not(:disabled):hover::file-selector-button {
-  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.form-control-color[type="color"] {
-  width: 40px;
-  height: 28px;
-  padding: 3px;
-  cursor: var(--cursor-interaction, pointer);
-}
-
-.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-.form-control-color[type="color"]::-webkit-color-swatch {
-  border: 0;
-  border-radius: calc(var(--radius-lg) - 4px);
-}
-
-textarea.form-control {
-  height: auto;
-  min-height: 72px;
-  padding: 8px 10px;
-  resize: vertical;
-}
-
-.form-control:focus-visible {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-control:disabled,
-.form-select:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-.form-select {
-  appearance: none;
-  display: block;
-  width: 100%;
-  min-height: 28px;
-  margin: 0;
-  padding: 0 32px 0 8px;
-  outline: none;
-  border: 1px solid var(--input);
-  border-radius: var(--radius-lg);
-  color: var(--foreground);
-  background-color: var(--secondary);
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
-    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
-  background-position:
-    calc(100% - 14px) 50%,
-    calc(100% - 10px) 50%;
-  background-repeat: no-repeat;
-  background-size: 4px 4px;
-  cursor: var(--cursor-interaction, default);
-}
-
-.form-select:not(:disabled):hover {
-  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
-}
-
-.form-select:focus-visible {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-check {
-  display: flex;
-  min-height: 20px;
-  align-items: center;
-  gap: 6px;
-}
-
-.form-check-input {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  flex: 0 0 auto;
-  margin: 0;
-  border: 1px solid var(--input);
-  color: var(--primary-foreground);
-  background-color: transparent;
-  cursor: var(--cursor-interaction, default);
-  transition:
-    background-color 150ms,
-    border-color 150ms,
-    box-shadow 150ms;
-}
-
-.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
-  border-color: var(--input);
-  border-radius: var(--radius-sm);
-  background-color: var(--secondary);
-  box-shadow: var(--shadow-sm);
-}
-
-.form-check:not(.form-switch)
-  .form-check-input:not(:disabled):not(:checked):hover {
-  background-color: var(--card);
-}
-
-.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
-  border-color: var(--primary);
-  background-color: var(--primary);
-}
-
-.form-check:not(.form-switch)
-  .form-check-input[type="checkbox"]:checked::before {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--primary-foreground);
-  content: "";
-  mask: var(--checkmark-image) center / 12px 12px no-repeat;
-}
-
-.form-check-input[type="radio"] {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--radius-full);
-}
-
-.form-check-input[type="radio"]:checked {
-  border: 2px solid var(--primary);
-  background:
-    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
-    var(--primary);
-}
-
-.form-check:not(.form-switch) .form-check-input:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-.form-check:not(.form-switch) .form-check-input:disabled {
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
-  cursor: not-allowed;
-}
-
-.form-switch .form-check-input:disabled,
-.form-switch .form-check-input:disabled + .form-check-label {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.form-check-label {
-  color: var(--foreground);
-  cursor: var(--cursor-interaction, default);
-}
-
-.form-switch .form-check-input {
-  position: relative;
-  width: 32px;
-  height: 20px;
-  border: 0;
-  border-radius: var(--radius-full);
-  background: var(--muted);
-  box-shadow: none;
-  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.form-switch .form-check-input::before {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 16px;
-  height: 16px;
-  box-sizing: border-box;
-  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
-  border-radius: var(--radius-full);
-  background: light-dark(var(--primary-foreground), var(--foreground));
-  box-shadow: var(--shadow-sm);
-  content: "";
-  transform: translate(2px, -50%);
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.form-switch .form-check-input:checked {
-  background: var(--primary);
-}
-
-.form-switch .form-check-input:checked::before {
-  transform: translate(14px, -50%);
-}
-
-.form-switch .form-check-input:focus-visible {
-  box-shadow: 0 0 0 2px var(--ring);
-}
-
-.form-range {
-  appearance: none;
-  display: block;
-  width: 100%;
-  height: 28px;
-  flex: 1;
-  margin: 0;
-  padding: 0;
-  outline: none;
-  border: 0;
-  accent-color: var(--primary);
-  background: linear-gradient(
-      color-mix(in srgb, var(--foreground) 7%, transparent),
-      color-mix(in srgb, var(--foreground) 7%, transparent)
-    )
-    center / 100% 2px no-repeat;
-}
-
-.form-range::-webkit-slider-runnable-track {
-  height: 28px;
-  background: transparent;
-}
-
-.form-range::-webkit-slider-thumb {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  margin-top: 4px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  background: light-dark(var(--primary-foreground), var(--foreground));
-}
-
-.form-range:focus-visible::-webkit-slider-thumb {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-range::-moz-range-track {
-  height: 28px;
-  background: transparent;
-}
-
-.form-range::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  background: light-dark(var(--primary-foreground), var(--foreground));
-}
-
-.form-range:focus-visible::-moz-range-thumb {
-  border-color: var(--ring);
-  box-shadow: inset 0 0 0 1px var(--ring);
-}
-
-.form-range:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-
-.btn:not(.btn-primary, .viz-tile):is(
-    [aria-pressed="true"],
-    [aria-selected="true"],
-    .is-selected
-  ) {
-  border-color: var(--primary);
-  color: var(--primary-foreground);
-  background: var(--primary);
-}
-
-.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
-  border-color: var(--primary);
-  box-shadow: inset 0 0 0 1px var(--primary);
-}
-
-.btn:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-#widget > svg {
-  width: 100%;
-}
-
-.text-warning,
-.text-destructive {
-  color: var(--destructive);
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="CUMCM Lens V5：严谨、可复现、可审计的数学建模训练平台。">
+  <title>CUMCM Lens V5</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<section id="cumcm-lens-viz">
-  <div class="viz-controls" aria-label="选择真题">
-    <button class="btn btn-primary" type="button" data-case="yellow" aria-pressed="true">2023E 黄河水沙</button>
-    <button class="btn" type="button" data-case="mooring" aria-pressed="false">2016A 系泊系统</button>
-    <button class="btn" type="button" data-case="crop" aria-pressed="false">2024C 种植策略</button>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand">
+        <div class="brand-mark">CL</div>
+        <div><strong>CUMCM Lens</strong><span>可信建模训练系统 · V5</span></div>
+      </div>
+      <nav id="nav">
+        <button data-view="overview" class="active">总览</button>
+        <button data-view="diagnostic">能力诊断</button>
+        <button data-view="training">训练任务</button>
+        <button data-view="graph">知识图谱</button>
+        <button data-view="lab">模型实验室</button>
+        <button data-view="coach">AI 教练</button>
+        <button data-view="benchmark">Benchmark</button>
+        <button data-view="simulation">48 小时模拟</button>
+        <button data-view="team">团队协作</button>
+        <button data-view="portfolio">作品集与内容</button>
+        <button data-view="contribute">开放贡献与 API</button>
+      </nav>
+      <div class="sidebar-footer">
+        <span class="status-dot"></span> 本地优先 · 数据保存在浏览器
+        <button id="exportAll" class="text-button">导出全部进度</button>
+      </div>
+    </aside>
+
+    <main id="main" tabindex="-1">
+      <header class="topbar">
+        <button id="menuButton" class="icon-button" aria-label="打开导航">☰</button>
+        <div><span class="eyebrow">CUMCM LENS / V5</span><h1 id="viewTitle">总览</h1></div>
+        <div class="top-actions">
+          <span id="saveStatus">已自动保存</span>
+          <a class="button secondary" href="downloads/CUMCM_Lens_V5_严谨训练手册.pdf">训练手册</a>
+          <a class="button" href="https://github.com/tuxiaobin-123/math">GitHub</a>
+        </div>
+      </header>
+
+      <section class="view active" id="view-overview" aria-labelledby="viewTitle">
+        <div class="hero panel">
+          <div>
+            <span class="badge success">V5 · 技术完整版本</span>
+            <h2>从“知道模型”到“能复现、能审计、能解释”</h2>
+            <p>三道真实赛题贯穿数据建模、机理建模与运筹优化。所有事实、复算结果和建议分级记录，不用复杂模型掩盖证据缺口。</p>
+            <div class="hero-actions"><button class="button" data-go="diagnostic">开始 5 分钟诊断</button><button class="button secondary" data-go="training">继续训练</button></div>
+          </div>
+          <div class="hero-score"><span>训练完成度</span><strong id="overallProgress">0%</strong><div class="progress"><i id="overallProgressBar"></i></div><small id="nextTask">等待首次诊断</small></div>
+        </div>
+        <div class="stat-grid" id="overviewStats"></div>
+        <div class="two-column">
+          <section class="panel"><div class="section-head"><div><span class="eyebrow">VERSION MAP</span><h2>能力演进</h2></div></div><div id="versionMap" class="version-map"></div></section>
+          <section class="panel"><div class="section-head"><div><span class="eyebrow">EVIDENCE</span><h2>证据边界</h2></div></div><div class="evidence-list"><div><b>A</b><span>官方事实<br><small>题面、附件、官方页面</small></span></div><div><b>R</b><span>可复算结果<br><small>代码、配置、种子、校验值</small></span></div><div><b>C</b><span>结构化建议<br><small>假设明确，可被反驳</small></span></div></div></section>
+        </div>
+        <section class="panel"><div class="section-head"><div><span class="eyebrow">REAL RESULTS</span><h2>三道代表题</h2></div><span class="subtle">结果保留局限，不粉饰精度</span></div><div id="caseCards" class="case-grid"></div></section>
+      </section>
+
+      <section class="view" id="view-diagnostic">
+        <div class="two-column wide-left">
+          <form id="diagnosticForm" class="panel">
+            <div class="section-head"><div><span class="eyebrow">5-MINUTE CHECK</span><h2>五维能力诊断</h2></div><span class="badge">非心理测量</span></div>
+            <p class="subtle">按“现在能独立完成的程度”评分，不按兴趣和想象评分。</p>
+            <div id="diagnosticSliders"></div>
+            <button class="button full" type="submit">生成训练建议</button>
+          </form>
+          <section class="panel result-panel" id="diagnosticResult"><div class="empty-state"><strong>还没有诊断结果</strong><p>完成左侧五项评分后，这里会给出推荐赛题、薄弱维度和第一项任务。</p></div></section>
+        </div>
+      </section>
+
+      <section class="view" id="view-training">
+        <div class="section-toolbar"><div><span class="eyebrow">12-WEEK LOOP</span><h2>任务、产出、评分、复盘</h2></div><div class="segmented" id="taskFilters"><button class="active" data-filter="all">全部</button><button data-filter="2023E">2023E</button><button data-filter="2016A">2016A</button><button data-filter="2024C">2024C</button></div></div>
+        <div class="training-layout"><div id="weekRail" class="week-rail"></div><div id="taskList" class="task-list"></div></div>
+      </section>
+
+      <section class="view" id="view-graph">
+        <div class="section-toolbar"><div><span class="eyebrow">PROBLEM → MODEL → AUDIT</span><h2>赛题知识图谱</h2></div><select id="graphFilter" class="select"><option value="all">全部关系</option><option value="2023E">2023E</option><option value="2016A">2016A</option><option value="2024C">2024C</option></select></div>
+        <div class="graph-layout"><div class="panel graph-panel"><svg id="knowledgeGraph" viewBox="0 0 900 540" role="img" aria-label="赛题、方法和审计关系图"></svg></div><aside id="graphDetail" class="panel detail-panel"><span class="eyebrow">NODE DETAIL</span><h2>点击节点查看</h2><p class="subtle">图谱用于解释连接，不代表存在唯一标准模型。</p></aside></div>
+      </section>
+
+      <section class="view" id="view-lab">
+        <div class="two-column wide-left">
+          <form id="labForm" class="panel">
+            <div class="section-head"><div><span class="eyebrow">BASELINE FIRST</span><h2>模型选择实验室</h2></div></div>
+            <label>任务类型<select name="task" class="select"><option value="regression">回归</option><option value="classification">分类</option><option value="forecast">时间预测</option><option value="optimization">优化</option><option value="mechanism">机理方程</option><option value="evaluation">综合评价</option><option value="simulation">模拟</option></select></label>
+            <label>样本规模<input name="samples" type="number" min="10" value="500"></label>
+            <label>缺失率<input name="missing" type="range" min="0" max="90" value="10"><output>10%</output></label>
+            <label class="check"><input name="timeOrdered" type="checkbox"> 数据具有时间顺序</label>
+            <label class="check"><input name="nonlinear" type="checkbox"> 有证据怀疑明显非线性</label>
+            <button class="button full" type="submit">生成比较方案</button>
+          </form>
+          <section id="labResult" class="panel result-panel"><div class="empty-state"><strong>先定义任务</strong><p>系统会先给基线，再给候选模型、验证方式和停止条件。</p></div></section>
+        </div>
+        <section class="panel"><div class="section-head"><div><span class="eyebrow">VERIFIED RUNS</span><h2>仓库可复算结果</h2></div></div><div class="table-wrap"><table><thead><tr><th>赛题</th><th>模型/情景</th><th>主指标</th><th>边界</th></tr></thead><tbody id="verifiedRuns"></tbody></table></div></section>
+      </section>
+
+      <section class="view" id="view-coach">
+        <div class="two-column wide-left">
+          <form id="coachForm" class="panel"><div class="section-head"><div><span class="eyebrow">AUDITABLE COACH</span><h2>把你的建模方案交给教练审查</h2></div><span class="badge">规则模式</span></div><textarea name="draft" rows="14" placeholder="例如：我们随机划分时间序列，用遗传算法得到全局最优解……"></textarea><label class="check"><input type="checkbox" name="timeOrdered" checked> 这是时间序列/有时间顺序的数据</label><button class="button full" type="submit">开始审查</button><p class="fine-print">本地规则不会上传文本。它能发现常见风险，不能证明你的模型正确。</p></form>
+          <section id="coachResult" class="panel result-panel"><div class="empty-state"><strong>等待方案</strong><p>反馈会标出规则 ID、严重度、证据级别和下一步动作。</p></div></section>
+        </div>
+      </section>
+
+      <section class="view" id="view-benchmark">
+        <div class="section-toolbar"><div><span class="eyebrow">REPRODUCIBLE, NOT OFFICIAL</span><h2>标准化 Benchmark</h2></div><span class="badge warning">社区训练基准</span></div>
+        <div id="benchmarkCards" class="case-grid"></div>
+        <div class="two-column">
+          <section class="panel"><div class="section-head"><div><span class="eyebrow">MULTI-METRIC</span><h2>结果排行榜</h2></div></div><div class="table-wrap"><table><thead><tr><th>提交</th><th>精度/目标</th><th>稳健性</th><th>复现</th><th>声明</th></tr></thead><tbody id="leaderboard"></tbody></table></div></section>
+          <section class="panel"><div class="section-head"><div><span class="eyebrow">BADGES</span><h2>复现认证</h2></div></div><div class="badge-stack" id="reproBadges"></div><p class="fine-print">徽章是仓库内部审计状态，不代表官方认证。</p></section>
+        </div>
+      </section>
+
+      <section class="view" id="view-simulation">
+        <div class="hero panel compact"><div><span class="badge warning">48H SIMULATION</span><h2>把决策过程也当作实验记录</h2><p>选题、模型冻结、图表冻结、论文冻结和终检都有明确时间点。</p></div><div class="countdown" id="countdown">48:00:00</div></div>
+        <div class="section-toolbar"><div class="hero-actions"><button id="startSimulation" class="button">开始模拟</button><button id="resetSimulation" class="button secondary">重置</button></div><span id="simulationStatus" class="subtle">尚未开始</span></div>
+        <div id="simulationTimeline" class="timeline"></div>
+      </section>
+
+      <section class="view" id="view-team">
+        <div class="section-toolbar"><div><span class="eyebrow">LOCAL TEAM BOARD</span><h2>三人竞赛协作看板</h2></div><button id="addTeamTask" class="button">添加任务</button></div>
+        <div id="roleCards" class="stat-grid"></div><div id="teamBoard" class="kanban"></div>
+      </section>
+
+      <section class="view" id="view-portfolio">
+        <div class="two-column wide-left"><section class="panel"><div class="section-head"><div><span class="eyebrow">AUTO PORTFOLIO</span><h2>把训练记录变成成果</h2></div></div><div id="portfolioPreview"></div><div class="hero-actions"><button id="exportPortfolio" class="button">导出作品集 HTML</button><button id="exportProgress" class="button secondary">导出 JSON</button></div></section><section class="panel"><div class="section-head"><div><span class="eyebrow">CONTENT ENGINE</span><h2>自媒体内容草稿</h2></div></div><label>选择角度<select id="contentAngle" class="select"><option value="mistake">反常识纠错</option><option value="case">真题复现</option><option value="method">方法教学</option><option value="journey">训练复盘</option></select></label><button id="generateContent" class="button full">生成图文/短视频结构</button><div id="contentDraft" class="content-draft"></div></section></div>
+      </section>
+
+      <section class="view" id="view-contribute">
+        <div class="two-column wide-left"><form id="manifestForm" class="panel"><div class="section-head"><div><span class="eyebrow">SUBMISSION AUDIT</span><h2>检查复现提交清单</h2></div></div><textarea name="manifest" rows="18"></textarea><button class="button full" type="submit">校验清单结构</button></form><section id="manifestResult" class="panel result-panel"></section></div>
+        <div class="two-column"><section class="panel"><span class="eyebrow">OPEN CONTRIBUTION</span><h2>贡献路径</h2><ol class="number-list"><li>只解决一个明确问题</li><li>事实带来源 ID，结果带脚本和校验值</li><li>通过测试、泄漏与约束审计</li><li>在 PR 中声明边界</li></ol><a class="button secondary" href="https://github.com/tuxiaobin-123/math/blob/agent/cumcm-lens-v5/CONTRIBUTING.md">查看贡献规范</a></section><section class="panel"><span class="eyebrow">LOCAL API</span><h2>连接自动化工具</h2><pre><code>cumcm-lens-api --port 8765
+GET  /api/v1/health
+POST /api/v1/diagnose
+POST /api/v1/coach</code></pre><div class="hero-actions"><button id="testApi" class="button secondary">测试本地 API</button><a class="button secondary" href="openapi.json">OpenAPI</a></div><p id="apiStatus" class="fine-print">默认网页不需要 API；连接后可被其他工具调用。</p></section></div>
+      </section>
+    </main>
   </div>
-  <div class="viz-grid" id="lens-stats" aria-live="polite"></div>
-  <svg id="lens-chart" viewBox="0 0 720 330" role="img" aria-labelledby="lens-chart-title lens-chart-desc">
-    <title id="lens-chart-title"></title>
-    <desc id="lens-chart-desc"></desc>
-  </svg>
-  <p class="text-small text-muted" id="lens-note"></p>
-</section>
-
-<style>
-  #cumcm-lens-viz {
-    color: var(--foreground);
-  }
-  #cumcm-lens-viz .viz-controls {
-    margin-bottom: 1rem;
-  }
-  #cumcm-lens-viz .viz-grid {
-    margin-bottom: 0.75rem;
-  }
-  #cumcm-lens-viz .card {
-    padding: 0.9rem;
-  }
-  #cumcm-lens-viz #lens-chart {
-    width: 100%;
-    height: auto;
-    display: block;
-    overflow: visible;
-  }
-  #cumcm-lens-viz .axis-line,
-  #cumcm-lens-viz .grid-line {
-    stroke: var(--border);
-    stroke-width: 1;
-  }
-  #cumcm-lens-viz .chart-label,
-  #cumcm-lens-viz .chart-value {
-    fill: var(--foreground);
-    font-size: 13px;
-  }
-  #cumcm-lens-viz .chart-axis {
-    fill: var(--muted-foreground);
-    font-size: 12px;
-  }
-  #cumcm-lens-viz .series-1 {
-    fill: var(--viz-series-1);
-    stroke: var(--viz-series-1);
-  }
-  #cumcm-lens-viz .series-2 {
-    fill: var(--viz-series-2);
-    stroke: var(--viz-series-2);
-  }
-  #cumcm-lens-viz #lens-note {
-    margin-top: 0.5rem;
-  }
-</style>
-
-<script>
-(() => {
-  const root = document.getElementById("cumcm-lens-viz");
-  const svg = document.getElementById("lens-chart");
-  const stats = document.getElementById("lens-stats");
-  const note = document.getElementById("lens-note");
-  const title = document.getElementById("lens-chart-title");
-  const desc = document.getElementById("lens-chart-desc");
-  const NS = "http://www.w3.org/2000/svg";
-
-  const cases = {
-    yellow: {
-      stats: [
-        ["有效时点", "16,735", "官方附件清洗后"],
-        ["含沙缺失率", "87.13%", "2,154条实测"],
-        ["最佳测试 RMSE", "6.511", "kg/m³"]
-      ],
-      title: "三种含沙量模型的时间外推 RMSE",
-      unit: "RMSE (kg/m³)",
-      labels: ["梯度提升", "随机森林", "岭回归"],
-      series: [{ name: "RMSE", values: [6.511, 6.706, 11.612], className: "series-1" }],
-      note: "测试集严格晚于训练集；较低误差不代表高精度，最佳模型测试 R² 为 0.325。"
-    },
-    mooring: {
-      stats: [
-        ["鲁棒候选", "I 型 / 36 m", "离散网格"],
-        ["重物球", "5,000 kg", "模型候选"],
-        ["极端场景吃水", "1.762 m", "上限 2 m"]
-      ],
-      title: "原方案随风速变化的角度约束",
-      unit: "角度 (°)",
-      labels: ["12 m/s", "24 m/s", "36 m/s"],
-      series: [
-        { name: "钢桶倾角", values: [1.154, 4.392, 9.114], className: "series-1" },
-        { name: "锚端角", values: [0, 3.927, 20.576], className: "series-2" }
-      ],
-      limits: [
-        { value: 5, label: "桶倾 5°" },
-        { value: 16, label: "锚端 16°" }
-      ],
-      note: "36 m/s 下原 1,200 kg 重物球方案违反两项角度约束；鲁棒候选在报告极端场景通过审计。"
-    },
-    crop: {
-      stats: [
-        ["官方地块", "54", "合计约 1,213 亩"],
-        ["优化计划违反", "0", "四类硬约束"],
-        ["鲁棒 MIP gap", "2.44%", "限时可行解"]
-      ],
-      title: "三种情景的模型目标利润",
-      unit: "百万元",
-      labels: ["超额浪费", "超额半价", "保守鲁棒"],
-      series: [{ name: "目标利润", values: [24.185, 59.881, 16.684], className: "series-1" }],
-      note: "目标值受完整地块单作和候选裁剪假设限制；求解器达到时限时不宣称全局最优。"
-    }
-  };
-
-  function element(name, attributes = {}) {
-    const node = document.createElementNS(NS, name);
-    Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, String(value)));
-    return node;
-  }
-
-  function addText(x, y, value, className, anchor = "middle") {
-    const textNode = element("text", {
-      x,
-      y,
-      class: className,
-      "text-anchor": anchor
-    });
-    textNode.textContent = value;
-    svg.appendChild(textNode);
-  }
-
-  function render(caseKey) {
-    const model = cases[caseKey];
-    stats.replaceChildren();
-    model.stats.forEach(([label, value, context]) => {
-      const card = document.createElement("div");
-      card.className = "card viz-stat";
-      const labelNode = document.createElement("div");
-      labelNode.className = "text-muted";
-      labelNode.textContent = label;
-      const valueNode = document.createElement("div");
-      valueNode.className = "viz-stat-value";
-      valueNode.textContent = value;
-      const contextNode = document.createElement("div");
-      contextNode.className = "text-small text-muted";
-      contextNode.textContent = context;
-      card.append(labelNode, valueNode, contextNode);
-      stats.appendChild(card);
-    });
-
-    while (svg.lastChild && !["title", "desc"].includes(svg.lastChild.tagName)) {
-      svg.removeChild(svg.lastChild);
-    }
-    title.textContent = model.title;
-    desc.textContent = model.note;
-    note.textContent = model.note;
-
-    const left = 70;
-    const right = 700;
-    const top = 35;
-    const bottom = 270;
-    const allValues = model.series.flatMap((series) => series.values);
-    const limitValues = (model.limits || []).map((limit) => limit.value);
-    const maximum = Math.max(...allValues, ...limitValues) * 1.18;
-    const y = (value) => bottom - (value / maximum) * (bottom - top);
-
-    for (let tick = 0; tick <= 4; tick += 1) {
-      const value = maximum * tick / 4;
-      const yPosition = y(value);
-      svg.appendChild(element("line", {
-        x1: left,
-        x2: right,
-        y1: yPosition,
-        y2: yPosition,
-        class: "grid-line"
-      }));
-      addText(left - 10, yPosition + 4, value.toFixed(value < 10 ? 1 : 0), "chart-axis", "end");
-    }
-    svg.appendChild(element("line", {
-      x1: left,
-      x2: right,
-      y1: bottom,
-      y2: bottom,
-      class: "axis-line"
-    }));
-    addText(16, 155, model.unit, "chart-axis", "start");
-
-    const groupWidth = (right - left) / model.labels.length;
-    const totalBarWidth = Math.min(92, groupWidth * 0.64);
-    const barWidth = totalBarWidth / model.series.length;
-    model.labels.forEach((label, labelIndex) => {
-      const center = left + groupWidth * (labelIndex + 0.5);
-      addText(center, bottom + 25, label, "chart-label");
-      model.series.forEach((series, seriesIndex) => {
-        const value = series.values[labelIndex];
-        const x = center - totalBarWidth / 2 + seriesIndex * barWidth + 2;
-        const bar = element("rect", {
-          x,
-          y: y(value),
-          width: Math.max(8, barWidth - 4),
-          height: bottom - y(value),
-          rx: 3,
-          class: series.className
-        });
-        const barTitle = element("title");
-        barTitle.textContent = `${label} · ${series.name}: ${value}`;
-        bar.appendChild(barTitle);
-        svg.appendChild(bar);
-        addText(x + (barWidth - 4) / 2, y(value) - 8, value.toFixed(2), "chart-value");
-      });
-    });
-
-    (model.limits || []).forEach((limit) => {
-      const line = element("line", {
-        x1: left,
-        x2: right,
-        y1: y(limit.value),
-        y2: y(limit.value),
-        class: "axis-line",
-        "stroke-dasharray": "5 4"
-      });
-      svg.appendChild(line);
-      addText(right, y(limit.value) - 7, limit.label, "chart-axis", "end");
-    });
-
-    if (model.series.length > 1) {
-      model.series.forEach((series, index) => {
-        const x = left + index * 130;
-        svg.appendChild(element("rect", {
-          x,
-          y: 305,
-          width: 12,
-          height: 12,
-          rx: 2,
-          class: series.className
-        }));
-        addText(x + 19, 316, series.name, "chart-axis", "start");
-      });
-    }
-  }
-
-  root.querySelectorAll("button[data-case]").forEach((button) => {
-    button.addEventListener("click", () => {
-      root.querySelectorAll("button[data-case]").forEach((candidate) => {
-        const active = candidate === button;
-        candidate.setAttribute("aria-pressed", String(active));
-        candidate.classList.toggle("btn-primary", active);
-      });
-      render(button.dataset.case);
-    });
-  });
-
-  render("yellow");
-})();
-</script>
-
-<script id="codex-visualization-floating-ui-core" src="https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js"></script>
-<script id="codex-visualization-floating-ui-dom" src="https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js"></script>
-<script id="codex-visualization-lucide" async src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js"></script>
-<script id="codex-visualization-tooltip">/* oxlint-disable typescript/no-unsafe-argument, typescript/no-unsafe-call, typescript/no-unsafe-return */
-// Runs inside the visualization sandbox, not the host webview.
-(() => {
-  if (window.FloatingUIDOM == null) {
-    return;
-  }
-  const { autoUpdate, computePosition, flip, offset, shift, size } =
-    window.FloatingUIDOM;
-  const tooltipPlacements = new Set(["top", "right", "bottom", "left"]);
-  const tooltipId = `codex-visualization-tooltip-${
-    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
-  }`;
-  const tooltipGap = 5;
-  const hoverDelay = 700;
-  const skipDelay = 300;
-  let activeTrigger = null;
-  let pendingTrigger = null;
-  let tooltip = null;
-  let openTimeout = null;
-  let autoUpdateCleanup = null;
-  let positionRequest = 0;
-  let skipDelayUntil = 0;
-
-  const getTrigger = (target) =>
-    target?.nodeType === Node.ELEMENT_NODE
-      ? target.closest("[data-tooltip]")
-      : null;
-  const containsTarget = (trigger, target) =>
-    target?.nodeType != null && trigger.contains(target);
-  const getContent = (trigger) =>
-    trigger.getAttribute("data-tooltip")?.trim() ?? "";
-  const getPlacement = (trigger) => {
-    const placement = trigger.getAttribute("data-tooltip-placement");
-    return tooltipPlacements.has(placement) ? placement : "top";
-  };
-  const getTooltip = () => {
-    if (tooltip == null) {
-      tooltip = document.createElement("div");
-      tooltip.id = tooltipId;
-      tooltip.className = "tooltip";
-      tooltip.setAttribute("role", "tooltip");
-    }
-    return tooltip;
-  };
-  const setDescribedBy = (trigger, described) => {
-    const ids = new Set(
-      (trigger.getAttribute("aria-describedby") ?? "")
-        .split(/\s+/)
-        .filter(Boolean),
-    );
-    if (described) {
-      ids.add(tooltipId);
-    } else {
-      ids.delete(tooltipId);
-    }
-    if (ids.size === 0) {
-      trigger.removeAttribute("aria-describedby");
-    } else {
-      trigger.setAttribute("aria-describedby", [...ids].join(" "));
-    }
-  };
-  const clearOpenTimeout = () => {
-    if (openTimeout != null) {
-      window.clearTimeout(openTimeout);
-      openTimeout = null;
-    }
-    pendingTrigger = null;
-  };
-  const closeTooltip = (activateSkipDelay = true) => {
-    clearOpenTimeout();
-    positionRequest += 1;
-    autoUpdateCleanup?.();
-    autoUpdateCleanup = null;
-    if (activeTrigger == null) {
-      return;
-    }
-    setDescribedBy(activeTrigger, false);
-    activeTrigger = null;
-    tooltip?.remove();
-    if (activateSkipDelay) {
-      skipDelayUntil = Date.now() + skipDelay;
-    }
-  };
-  const updatePosition = (trigger, floating) => {
-    const request = ++positionRequest;
-    void computePosition(trigger, floating, {
-      middleware: [
-        offset(tooltipGap),
-        flip({ padding: tooltipGap }),
-        shift({ padding: tooltipGap }),
-        size({
-          padding: tooltipGap,
-          apply({ availableHeight, availableWidth, elements }) {
-            elements.floating.style.setProperty(
-              "--tooltip-available-width",
-              `${Math.max(0, availableWidth)}px`,
-            );
-            elements.floating.style.setProperty(
-              "--tooltip-available-height",
-              `${Math.max(0, availableHeight)}px`,
-            );
-          },
-        }),
-      ],
-      placement: getPlacement(trigger),
-      strategy: "fixed",
-    })
-      .then(({ x, y }) => {
-        if (activeTrigger !== trigger || request !== positionRequest) {
-          return;
-        }
-        const scale = window.devicePixelRatio || 1;
-        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
-        floating.style.visibility = "visible";
-      })
-      .catch(() => {
-        if (activeTrigger === trigger && request === positionRequest) {
-          closeTooltip(false);
-        }
-      });
-  };
-  const openTooltip = (trigger) => {
-    const content = getContent(trigger);
-    if (!trigger.isConnected || content.length === 0) {
-      return;
-    }
-    clearOpenTimeout();
-    if (activeTrigger === trigger) {
-      return;
-    }
-    closeTooltip();
-    const floating = getTooltip();
-    floating.textContent = content;
-    floating.style.visibility = "hidden";
-    floating.style.transform = "translate(0, 0)";
-    document.body.appendChild(floating);
-    activeTrigger = trigger;
-    setDescribedBy(trigger, true);
-    autoUpdateCleanup = autoUpdate(trigger, floating, () => {
-      updatePosition(trigger, floating);
-    });
-  };
-  const requestOpen = (trigger, immediate = false) => {
-    if (
-      getContent(trigger).length === 0 ||
-      activeTrigger === trigger ||
-      pendingTrigger === trigger
-    ) {
-      return;
-    }
-    clearOpenTimeout();
-    pendingTrigger = trigger;
-    const delay =
-      immediate || activeTrigger != null || Date.now() < skipDelayUntil
-        ? 0
-        : hoverDelay;
-    if (delay === 0) {
-      openTooltip(trigger);
-      return;
-    }
-    openTimeout = window.setTimeout(() => {
-      openTimeout = null;
-      pendingTrigger = null;
-      openTooltip(trigger);
-    }, delay);
-  };
-  const handlePointerOpen = (event) => {
-    if (event.pointerType === "touch") {
-      return;
-    }
-    const trigger = getTrigger(event.target);
-    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
-      return;
-    }
-    requestOpen(trigger);
-  };
-  const handleLeave = (event) => {
-    const trigger = getTrigger(event.target);
-    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
-      return;
-    }
-    if (activeTrigger === trigger || pendingTrigger === trigger) {
-      closeTooltip();
-    }
-  };
-  const handleFocusIn = (event) => {
-    const trigger = getTrigger(event.target);
-    if (trigger?.matches(":focus-visible")) {
-      requestOpen(trigger, true);
-    }
-  };
-  const handleKeyDown = (event) => {
-    if (event.key === "Escape") {
-      closeTooltip();
-    }
-  };
-  const handleContextMenu = (event) => {
-    const trigger = getTrigger(event.target);
-    if (activeTrigger === trigger || pendingTrigger === trigger) {
-      closeTooltip();
-    }
-  };
-  const destroy = () => {
-    closeTooltip(false);
-    document.removeEventListener("pointerover", handlePointerOpen);
-    document.removeEventListener("pointerout", handleLeave);
-    document.removeEventListener("focusin", handleFocusIn);
-    document.removeEventListener("focusout", handleLeave);
-    document.removeEventListener("keydown", handleKeyDown);
-    document.removeEventListener("contextmenu", handleContextMenu);
-    tooltip = null;
-  };
-
-  document.addEventListener("pointerover", handlePointerOpen);
-  document.addEventListener("pointerout", handleLeave);
-  document.addEventListener("focusin", handleFocusIn);
-  document.addEventListener("focusout", handleLeave);
-  document.addEventListener("keydown", handleKeyDown);
-  document.addEventListener("contextmenu", handleContextMenu);
-  window.addEventListener("pagehide", destroy, { once: true });
-})();
-</script>
-<script id="codex-visualization-lucide-initialization">(() => {
-  const initialize = () => {
-    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
-  };
-  if (globalThis.lucide != null) {
-    initialize();
-    return;
-  }
-  document
-    .getElementById("codex-visualization-lucide")
-    ?.addEventListener("load", initialize, { once: true });
-})();
-</script>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

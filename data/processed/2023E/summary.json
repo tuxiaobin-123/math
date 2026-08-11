@@ -2238,15 +2238,15 @@
       "target": "discharge_m3s",
       "model": "seasonal_naive",
       "mae": 725.6709001497233,
-      "rmse": 1107.657280348149,
-      "r2": -0.1414093546295645
+      "rmse": 1107.6572803481492,
+      "r2": -0.14140935462956494
     },
     {
       "target": "discharge_m3s",
       "model": "damped_trend_seasonal",
       "mae": 744.2140797831211,
       "rmse": 949.0406641602892,
-      "r2": 0.16208443572661657
+      "r2": 0.16208443572661646
     },
     {
       "target": "sediment_kgm3",
@@ -2338,5 +2338,14 @@
     "缺测含沙量由模型填补，年度输沙量因此包含模型不确定性。",
     "不规则时距采用梯形积分；超过48小时的间隔被截断，不跨长缺口外推。",
     "采样方案是信息增益启发式结果，不替代现场成本和安全约束。"
+  ],
+  "artifact_repairs": [
+    {
+      "version": "5.0.0",
+      "fixes": [
+        "future dates use monthly-start frequency",
+        "damped forecast starts from fitted trend endpoint"
+      ]
+    }
   ]
 }

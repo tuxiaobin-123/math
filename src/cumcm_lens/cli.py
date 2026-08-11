@@ -10,6 +10,7 @@ from cumcm_lens.cases.crop_planning import run_case as run_crop
 from cumcm_lens.cases.mooring import run_case as run_mooring
 from cumcm_lens.cases.yellow_river import run_case as run_yellow_river
 from cumcm_lens.core.plots import build_all_figures
+from cumcm_lens.training import certify_submission, coach_review, diagnose_profile, write_json
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -19,11 +20,31 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ("run-2023e", "run-2016a", "run-2024c", "run-all", "paper-figures"):
         subparsers.add_parser(command)
+    diagnose = subparsers.add_parser("diagnose")
+    diagnose.add_argument("scores_json", type=Path)
+    coach = subparsers.add_parser("coach")
+    coach.add_argument("draft", type=Path)
+    certify = subparsers.add_parser("certify")
+    certify.add_argument("manifest", type=Path)
+    certify.add_argument("--output", type=Path, default=Path("artifacts/certificate.json"))
     return parser
 
 
 def main() -> None:
     args = build_parser().parse_args()
+    if args.command == "diagnose":
+        payload = json.loads(args.scores_json.read_text(encoding="utf-8"))
+        print(json.dumps(diagnose_profile(payload), ensure_ascii=False, indent=2))
+        return
+    if args.command == "coach":
+        print(json.dumps(coach_review(args.draft.read_text(encoding="utf-8")), ensure_ascii=False, indent=2))
+        return
+    if args.command == "certify":
+        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+        report = certify_submission(manifest, ROOT)
+        write_json(args.output, report)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return
     raw = ROOT / "data" / "raw"
     processed = ROOT / "data" / "processed"
     results = {}

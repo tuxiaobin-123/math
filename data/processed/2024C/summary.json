@@ -1,0 +1,186 @@
+{
+  "case": "2024C",
+  "source": "official attachments 1 and 2",
+  "quality": {
+    "land_rows": 54,
+    "crop_rows": 41,
+    "planting_rows_2023": 87,
+    "statistics_rows": 107,
+    "total_land_mu": 1212.9999999999993,
+    "demand_unmatched_planting_rows": 0
+  },
+  "baseline": {
+    "name": "repeat_2023",
+    "purpose": "deliberately simple diagnostic baseline, not a feasible recommendation",
+    "audits": [
+      {
+        "name": "plot_capacity",
+        "passed": true,
+        "severity": "error",
+        "observed": 0,
+        "expected": "0 violations"
+      },
+      {
+        "name": "consecutive_crop",
+        "passed": false,
+        "severity": "error",
+        "observed": 196,
+        "expected": "0 violations against 2023 and adjacent years"
+      },
+      {
+        "name": "legume_in_every_three_year_window",
+        "passed": false,
+        "severity": "error",
+        "observed": 175,
+        "expected": "0 plot-window violations"
+      },
+      {
+        "name": "land_crop_eligibility",
+        "passed": false,
+        "severity": "error",
+        "observed": 14,
+        "expected": "0 violations"
+      }
+    ]
+  },
+  "models": [
+    {
+      "scenario": "waste",
+      "success": false,
+      "solver_status": 1,
+      "solver_message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+      "objective_profit_yuan": 24184916.25,
+      "mip_gap": 0.09183254872755658,
+      "runtime_seconds": 10.084497935999934,
+      "binary_variables": 4284,
+      "continuous_variables": 287,
+      "constraints": 3461,
+      "candidate_limit_per_land_season_plus_all_legumes": 6,
+      "audits": [
+        {
+          "name": "plot_capacity",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations"
+        },
+        {
+          "name": "consecutive_crop",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations against 2023 and adjacent years"
+        },
+        {
+          "name": "legume_in_every_three_year_window",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 plot-window violations"
+        },
+        {
+          "name": "land_crop_eligibility",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations"
+        }
+      ],
+      "assumption": "为使轮作约束可被严格审计，每个地块每季只选一种作物；这是官方允许方案的保守子集，不声称是允许分区混种时的全局最优。"
+    },
+    {
+      "scenario": "half_price",
+      "success": false,
+      "solver_status": 1,
+      "solver_message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+      "objective_profit_yuan": 59880856.25,
+      "mip_gap": 0.03010716662288762,
+      "runtime_seconds": 10.13753575499959,
+      "binary_variables": 4284,
+      "continuous_variables": 287,
+      "constraints": 3461,
+      "candidate_limit_per_land_season_plus_all_legumes": 6,
+      "audits": [
+        {
+          "name": "plot_capacity",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations"
+        },
+        {
+          "name": "consecutive_crop",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations against 2023 and adjacent years"
+        },
+        {
+          "name": "legume_in_every_three_year_window",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 plot-window violations"
+        },
+        {
+          "name": "land_crop_eligibility",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations"
+        }
+      ],
+      "assumption": "为使轮作约束可被严格审计，每个地块每季只选一种作物；这是官方允许方案的保守子集，不声称是允许分区混种时的全局最优。"
+    },
+    {
+      "scenario": "robust_worst_case",
+      "success": false,
+      "solver_status": 1,
+      "solver_message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+      "objective_profit_yuan": 16684485.365355106,
+      "mip_gap": 0.024425522424814525,
+      "runtime_seconds": 10.139828567000222,
+      "binary_variables": 4284,
+      "continuous_variables": 287,
+      "constraints": 3461,
+      "candidate_limit_per_land_season_plus_all_legumes": 6,
+      "audits": [
+        {
+          "name": "plot_capacity",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations"
+        },
+        {
+          "name": "consecutive_crop",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations against 2023 and adjacent years"
+        },
+        {
+          "name": "legume_in_every_three_year_window",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 plot-window violations"
+        },
+        {
+          "name": "land_crop_eligibility",
+          "passed": true,
+          "severity": "error",
+          "observed": 0,
+          "expected": "0 violations"
+        }
+      ],
+      "assumption": "为使轮作约束可被严格审计，每个地块每季只选一种作物；这是官方允许方案的保守子集，不声称是允许分区混种时的全局最优。"
+    }
+  ],
+  "assumptions_and_boundaries": [
+    "每地块每季只种一种作物，以便严格表达逐地块轮作；因此最优值是原题可行域的保守下界。",
+    "常规两种情景采用2023年销量上限不变；鲁棒情景采用题面区间的保守端点。",
+    "销量变量按作物—年份聚合，销售价格采用该作物适用地类/季次价格的中位数。",
+    "结果不冒充竞赛标准答案；应通过附件3模板另行导出并人工复核。"
+  ]
+}

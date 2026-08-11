@@ -1,0 +1,10 @@
+{
+  "case": "2023E-sediment-forecast",
+  "task": "time_series",
+  "source_ids": ["CUMCM-2023-E-ATTACHMENT-1"],
+  "seed": 42,
+  "time_split": {"strategy": "chronological", "train_fraction": 0.8},
+  "metrics": {"rmse": 6.511, "r2": 0.325},
+  "artifacts": [{"path": "data/processed/2023E/summary.json"}],
+  "limitations": ["Sediment concentration missingness is 87.13% in the cleaned monitoring series."]
+}

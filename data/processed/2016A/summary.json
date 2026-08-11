@@ -1,0 +1,307 @@
+{
+  "case": "2016A",
+  "source": "official problem statement; no separate data attachment",
+  "official_parameters": {
+    "buoy": "diameter 2 m, height 2 m, mass 1000 kg",
+    "pipes": "4 × (length 1 m, diameter 0.05 m, mass 10 kg)",
+    "barrel": "length 1 m, diameter 0.30 m, total mass 100 kg",
+    "anchor_mass_kg": 600,
+    "chain_types": {
+      "I": {
+        "link_length_mm": 78.0,
+        "mass_kgm": 3.2
+      },
+      "II": {
+        "link_length_mm": 105.0,
+        "mass_kgm": 7.0
+      },
+      "III": {
+        "link_length_mm": 120.0,
+        "mass_kgm": 12.5
+      },
+      "IV": {
+        "link_length_mm": 150.0,
+        "mass_kgm": 19.5
+      },
+      "V": {
+        "link_length_mm": 180.0,
+        "mass_kgm": 28.12
+      }
+    },
+    "wind_force": "F = 0.625 S v^2 N",
+    "current_force": "F = 374 S v^2 N"
+  },
+  "problem_states": [
+    {
+      "depth_m": 18.0,
+      "wind_ms": 12.0,
+      "current_ms": 0.0,
+      "seawater_density_kgm3": 1025.0,
+      "chain_type": "II",
+      "chain_length_m": 22.05,
+      "ballast_mass_kg": 1200.0,
+      "wind_coefficient": 0.625,
+      "current_coefficient": 374.0,
+      "regime": "seabed_contact",
+      "horizontal_tension_n": 233.6258178950802,
+      "anchor_vertical_tension_n": 0.0,
+      "suspended_chain_m": 15.733660815303018,
+      "chain_on_seabed_m": 6.316339184696982,
+      "chain_horizontal_span_m": 8.217988069639768,
+      "chain_vertical_rise_m": 12.298858200608874,
+      "component_horizontal_span_m": 0.09677136608376893,
+      "excursion_radius_m": 8.314759435723536,
+      "draft_m": 0.7020787894717765,
+      "anchor_angle_deg": 0.0,
+      "barrel_angle_deg": 1.1541143300383603,
+      "pipe_angles_deg_bottom_to_top": [
+        1.1092704960356314,
+        1.1014888069283735,
+        1.0938155233719116,
+        1.0862483960329294
+      ],
+      "equation_residual_max": 3.552713678800501e-15,
+      "audits": [
+        {
+          "name": "barrel_tilt_deg",
+          "passed": true,
+          "severity": "error",
+          "observed": 1.1541143300383603,
+          "expected": "<= 5.0"
+        },
+        {
+          "name": "anchor_angle_deg",
+          "passed": true,
+          "severity": "error",
+          "observed": 0.0,
+          "expected": "<= 16.0"
+        },
+        {
+          "name": "draft_m",
+          "passed": true,
+          "severity": "error",
+          "observed": 0.7020787894717765,
+          "expected": ">= 0.0 and <= 2.0"
+        },
+        {
+          "name": "equation_residual_max",
+          "passed": true,
+          "severity": "error",
+          "observed": 3.552713678800501e-15,
+          "expected": "<= 1e-06"
+        }
+      ],
+      "numerical_catenary_audit": {
+        "analytic_x_m": 8.217988069639768,
+        "numeric_x_m": 8.21798806963977,
+        "absolute_x_error_m": 1.7763568394002505e-15,
+        "analytic_y_m": 12.298858200608874,
+        "numeric_y_m": 12.298858200608876,
+        "absolute_y_error_m": 1.7763568394002505e-15
+      }
+    },
+    {
+      "depth_m": 18.0,
+      "wind_ms": 24.0,
+      "current_ms": 0.0,
+      "seawater_density_kgm3": 1025.0,
+      "chain_type": "II",
+      "chain_length_m": 22.05,
+      "ballast_mass_kg": 1200.0,
+      "wind_coefficient": 0.625,
+      "current_coefficient": 374.0,
+      "regime": "fully_suspended",
+      "horizontal_tension_n": 924.461187620381,
+      "anchor_vertical_tension_n": 63.45999748314776,
+      "suspended_chain_m": 22.05,
+      "chain_on_seabed_m": 0.0,
+      "chain_horizontal_span_m": 17.376608628453116,
+      "chain_vertical_rise_m": 12.297577450449081,
+      "component_horizontal_span_m": 0.3685006816090625,
+      "excursion_radius_m": 17.74510931006218,
+      "draft_m": 0.7160261283050264,
+      "anchor_angle_deg": 3.926930635419537,
+      "barrel_angle_deg": 4.391722907586523,
+      "pipe_angles_deg_bottom_to_top": [
+        4.227656100863129,
+        4.199131570277727,
+        4.170988701591592,
+        4.143219898993417
+      ],
+      "equation_residual_max": 0.0,
+      "audits": [
+        {
+          "name": "barrel_tilt_deg",
+          "passed": true,
+          "severity": "error",
+          "observed": 4.391722907586523,
+          "expected": "<= 5.0"
+        },
+        {
+          "name": "anchor_angle_deg",
+          "passed": true,
+          "severity": "error",
+          "observed": 3.926930635419537,
+          "expected": "<= 16.0"
+        },
+        {
+          "name": "draft_m",
+          "passed": true,
+          "severity": "error",
+          "observed": 0.7160261283050264,
+          "expected": ">= 0.0 and <= 2.0"
+        },
+        {
+          "name": "equation_residual_max",
+          "passed": true,
+          "severity": "error",
+          "observed": 0.0,
+          "expected": "<= 1e-06"
+        }
+      ],
+      "numerical_catenary_audit": {
+        "analytic_x_m": 17.376608628453116,
+        "numeric_x_m": 17.376608628453116,
+        "absolute_x_error_m": 0.0,
+        "analytic_y_m": 12.297577450449081,
+        "numeric_y_m": 12.297577450449081,
+        "absolute_y_error_m": 0.0
+      }
+    },
+    {
+      "depth_m": 18.0,
+      "wind_ms": 36.0,
+      "current_ms": 0.0,
+      "seawater_density_kgm3": 1025.0,
+      "chain_type": "II",
+      "chain_length_m": 22.05,
+      "ballast_mass_kg": 1200.0,
+      "wind_coefficient": 0.625,
+      "current_coefficient": 374.0,
+      "regime": "fully_suspended",
+      "horizontal_tension_n": 2043.930624225115,
+      "anchor_vertical_tension_n": 767.295843515864,
+      "suspended_chain_m": 22.05,
+      "chain_on_seabed_m": 0.0,
+      "chain_horizontal_span_m": 18.07626761407039,
+      "chain_vertical_rise_m": 12.32047216984737,
+      "component_horizontal_span_m": 0.7643240823137062,
+      "excursion_radius_m": 18.840591696384095,
+      "draft_m": 0.7383144294906699,
+      "anchor_angle_deg": 20.576240677853793,
+      "barrel_angle_deg": 9.11381413091119,
+      "pipe_angles_deg_bottom_to_top": [
+        8.79543308586331,
+        8.739901998888856,
+        8.685062371974063,
+        8.630901468807728
+      ],
+      "equation_residual_max": 4.547473508864641e-16,
+      "audits": [
+        {
+          "name": "barrel_tilt_deg",
+          "passed": false,
+          "severity": "error",
+          "observed": 9.11381413091119,
+          "expected": "<= 5.0"
+        },
+        {
+          "name": "anchor_angle_deg",
+          "passed": false,
+          "severity": "error",
+          "observed": 20.576240677853793,
+          "expected": "<= 16.0"
+        },
+        {
+          "name": "draft_m",
+          "passed": true,
+          "severity": "error",
+          "observed": 0.7383144294906699,
+          "expected": ">= 0.0 and <= 2.0"
+        },
+        {
+          "name": "equation_residual_max",
+          "passed": true,
+          "severity": "error",
+          "observed": 4.547473508864641e-16,
+          "expected": "<= 1e-06"
+        }
+      ],
+      "numerical_catenary_audit": {
+        "analytic_x_m": 18.07626761407039,
+        "numeric_x_m": 18.076267614070396,
+        "absolute_x_error_m": 7.105427357601002e-15,
+        "analytic_y_m": 12.32047216984737,
+        "numeric_y_m": 12.320472169847372,
+        "absolute_y_error_m": 1.7763568394002505e-15
+      }
+    }
+  ],
+  "robust_design": {
+    "depth_m": 20.0,
+    "wind_ms": 36.0,
+    "current_ms": 1.5,
+    "seawater_density_kgm3": 1025.0,
+    "chain_type": "I",
+    "chain_length_m": 36.0,
+    "ballast_mass_kg": 5000.0,
+    "wind_coefficient": 0.625,
+    "current_coefficient": 374.0,
+    "regime": "fully_suspended",
+    "horizontal_tension_n": 3771.7264433299883,
+    "anchor_vertical_tension_n": 1013.5291499592862,
+    "suspended_chain_m": 36.0,
+    "chain_on_seabed_m": 0.0,
+    "chain_horizontal_span_m": 33.38952370076081,
+    "chain_vertical_rise_m": 13.255539041304537,
+    "component_horizontal_span_m": 0.4127979970553765,
+    "excursion_radius_m": 33.80232169781619,
+    "draft_m": 1.7615308465077513,
+    "anchor_angle_deg": 15.04106758718267,
+    "barrel_angle_deg": 4.78551641383368,
+    "pipe_angles_deg_bottom_to_top": [
+      4.73644427137397,
+      4.7276297431589205,
+      4.718847887620847,
+      4.710098523845167
+    ],
+    "equation_residual_max": 1.4210854715202004e-14,
+    "audits": [
+      {
+        "name": "barrel_tilt_deg",
+        "passed": true,
+        "severity": "error",
+        "observed": 4.78551641383368,
+        "expected": "<= 5.0"
+      },
+      {
+        "name": "anchor_angle_deg",
+        "passed": true,
+        "severity": "error",
+        "observed": 15.04106758718267,
+        "expected": "<= 16.0"
+      },
+      {
+        "name": "draft_m",
+        "passed": true,
+        "severity": "error",
+        "observed": 1.7615308465077513,
+        "expected": ">= 0.0 and <= 2.0"
+      },
+      {
+        "name": "equation_residual_max",
+        "passed": true,
+        "severity": "error",
+        "observed": 1.4210854715202004e-14,
+        "expected": "<= 1e-06"
+      }
+    ]
+  },
+  "design_objective": "minimize excursion + 2×max barrel tilt + ballast penalty + chain mass-length penalty over depth {16,18,20} m at wind 36 m/s and current 1.5 m/s",
+  "assumptions": [
+    "静力、同向稳态风流；未计波浪、涡激振动和锚链弯曲刚度。",
+    "钢制构件按密度7850 kg/m³折算浮力；重物球按同一密度处理。",
+    "锚链接地点采用可接触海床/全悬浮两种互斥状态求解。",
+    "游动区域报告为水平偏移半径，其实际方向由环境载荷方向决定。"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "manual": {
+    "path": "output/pdf/CUMCM_Lens_V5_严谨训练手册.pdf",
+    "pages": 76
+  },
+  "workbook": {
+    "path": "output/pdf/CUMCM_Lens_V5_训练作业册.pdf",
+    "pages": 38
+  },
+  "font": "Noto Sans SC (embedded)"
+}

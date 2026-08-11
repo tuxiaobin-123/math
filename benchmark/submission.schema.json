@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cumcm-lens.local/schemas/submission-v1.json",
+  "title": "CUMCM Lens reproducibility submission",
+  "type": "object",
+  "required": ["case", "source_ids", "seed", "metrics", "artifacts", "limitations"],
+  "properties": {
+    "case": {"type": "string"},
+    "task": {"enum": ["regression", "classification", "forecast", "time_series", "optimization", "mechanism"]},
+    "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "seed": {"type": "integer"},
+    "time_split": {"type": ["object", "null"]},
+    "metrics": {"type": "object", "minProperties": 1},
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {"path": {"type": "string"}, "sha256": {"type": "string"}}
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

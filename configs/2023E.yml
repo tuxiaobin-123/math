@@ -1,0 +1,19 @@
+case: 2023E
+seed: 42
+split:
+  strategy: chronological
+  train_fraction: 0.8
+target: sediment_kgm3
+features:
+  - water_level_m
+  - discharge_m3s
+  - trend_days
+  - doy_sin
+  - doy_cos
+  - hour_sin
+  - hour_cos
+models:
+  - ridge_log
+  - random_forest_log
+  - hist_gradient_boosting_log
+primary_metric: rmse
